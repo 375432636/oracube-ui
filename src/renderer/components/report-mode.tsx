@@ -1,13 +1,14 @@
 import React from 'react'
+import FaceReport from './face-report'
 
 interface Props {
   photoSrc?: string | null
 }
 
-const ReportMode: React.FC<Props> = () => {
+const ReportMode: React.FC<Props> = ({ photoSrc }) => {
   return (
     <div className="report-container" data-testid="report-mode">
-      <div className="state-message">报告加载中...</div>
+      <FaceReport photoSrc={photoSrc} />
     </div>
   )
 }
