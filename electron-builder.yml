@@ -1,0 +1,33 @@
+appId: com.oracube.ui
+productName: Oracube-UI
+directories:
+  buildResources: build
+  output: dist
+files:
+  - out/**/*
+  - data/**/*
+  - "!node_modules/**/*"
+extraResources:
+  - from: data/
+    to: data/
+    filter:
+      - "**/*"
+
+linux:
+  target:
+    - AppImage
+  category: Utility
+  icon: build/icon.png
+
+mac:
+  target:
+    - dmg
+    - zip
+  category: public.app-category.utilities
+  icon: build/icon.icns
+
+appImage:
+  artifactName: "${name}-${version}.AppImage"
+
+dmg:
+  artifactName: "${name}-${version}.dmg"
