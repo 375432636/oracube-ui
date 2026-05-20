@@ -1,8 +1,16 @@
 import { app, BrowserWindow, shell } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import { startServer } from './api-server'
+import { setupIpcHandlers } from './ipc-handlers'
 
 let mainWindow: BrowserWindow | null = null
+
+function sendToRenderer(channel: string, ...args: unknown[]): void {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send(channel, ...args)
+  }
+}
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
@@ -42,6 +50,15 @@ app.whenReady().then(() => {
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
+
+  setupIpcHandlers()
+
+  startServer(
+    8765,
+    (mode) => sendToRenderer('mode-change', mode),
+    (emotion) => sendToRenderer('animation-trigger', emotion),
+    () => sendToRenderer('capture-trigger')
+  )
 
   createWindow()
 
