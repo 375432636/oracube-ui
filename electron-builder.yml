@@ -12,6 +12,11 @@ extraResources:
     to: data/
     filter:
       - "**/*"
+publish:
+  - provider: github
+    owner: 375432636
+    repo: oracube-ui
+    releaseType: draft
 
 linux:
   target:
