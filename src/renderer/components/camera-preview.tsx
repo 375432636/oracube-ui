@@ -18,6 +18,11 @@ const CameraPreview: React.FC<Props> = ({ onPhotoCapture, isCapturing }) => {
 
     const startCamera = async (): Promise<void> => {
       try {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          if (!cancelled) setStatus('not-found')
+          return
+        }
+
         const devices = await navigator.mediaDevices.enumerateDevices()
         const videoDevices = devices.filter((d) => d.kind === 'videoinput')
 
@@ -26,9 +31,16 @@ const CameraPreview: React.FC<Props> = ({ onPhotoCapture, isCapturing }) => {
           return
         }
 
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { deviceId: { exact: videoDevices[0].deviceId } }
-        })
+        let stream: MediaStream
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { deviceId: { exact: videoDevices[0].deviceId }, width: 720, height: 720 }
+          })
+        } catch {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { width: 720, height: 720 }
+          })
+        }
 
         if (cancelled) {
           stream.getTracks().forEach((t) => t.stop())
@@ -36,14 +48,19 @@ const CameraPreview: React.FC<Props> = ({ onPhotoCapture, isCapturing }) => {
         }
 
         streamRef.current = stream
+
+        // Set srcObject immediately and let the video element handle play
         if (videoRef.current) {
           videoRef.current.srcObject = stream
         }
+
         if (!cancelled) setStatus('active')
       } catch (err: unknown) {
         if (cancelled) return
         if (err instanceof DOMException && err.name === 'NotAllowedError') {
           setStatus('denied')
+        } else if (err instanceof DOMException && err.name === 'NotFoundError') {
+          setStatus('not-found')
         } else {
           setStatus('error')
         }
@@ -73,33 +90,35 @@ const CameraPreview: React.FC<Props> = ({ onPhotoCapture, isCapturing }) => {
     }
   }, [isCapturing, status, onPhotoCapture])
 
-  if (status === 'loading') {
-    return <div className="state-message">正在启动摄像头...</div>
-  }
-
-  if (status === 'not-found') {
-    return <div className="state-message state-error">未检测到摄像头</div>
-  }
-
-  if (status === 'denied') {
-    return <div className="state-message state-error">摄像头权限被拒绝</div>
-  }
-
-  if (status === 'error') {
-    return <div className="state-message state-error">摄像头启动失败</div>
-  }
+  const isActive = status === 'active'
 
   return (
-    <>
+    <div style={{ width: '100%', height: '100%', position: 'relative', background: '#000', overflow: 'hidden' }}>
+      {!isActive && (
+        <div className="state-message" style={{ position: 'absolute', inset: 0, zIndex: 2 }}>
+          {status === 'loading' && '正在启动摄像头...'}
+          {status === 'not-found' && <span className="state-error">未检测到摄像头</span>}
+          {status === 'denied' && <span className="state-error">摄像头权限被拒绝</span>}
+          {status === 'error' && <span className="state-error">摄像头启动失败</span>}
+        </div>
+      )}
+      {/* Always render video, always visible. Overlay covers it when not active. */}
       <video
         ref={videoRef}
         data-testid="camera-video"
         autoPlay
         playsInline
         muted
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'contain',
+          display: 'block',
+          background: '#000'
+        }}
       />
       <canvas ref={canvasRef} style={{ display: 'none' }} />
-    </>
+    </div>
   )
 }
 
