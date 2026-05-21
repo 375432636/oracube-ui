@@ -36,7 +36,7 @@ for dir in "${ANIM_DIRS[@]}"; do
     ffmpeg -y -i "${file}" \
       -c:v libvpx-vp9 \
       -b:v 1M \
-      -pix_fmt yuva420p \
+      -pix_fmt yuv420p \
       -an \
       "${output}" 2>/dev/null
   done

@@ -17,8 +17,9 @@ const CameraMode: React.FC<Props> = ({ onCaptureDone, autoCapture, onPhotoSaved 
   const handleCapture = useCallback(async (dataUrl: string) => {
     try {
       const path = await window.oracubeUI.savePhoto(dataUrl)
-      setRecentPhoto(path)
-      onPhotoSaved(path)
+      const fullUrl = `http://localhost:8765${path}`
+      setRecentPhoto(fullUrl)
+      onPhotoSaved(fullUrl)
       onCaptureDone()
     } catch {
       // Photo save failed silently

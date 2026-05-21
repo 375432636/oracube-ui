@@ -33,7 +33,7 @@ export function setupIpcHandlers(): void {
     const buffer = Buffer.from(base64Data, 'base64')
     await writeFile(filePath, buffer)
 
-    return filePath
+    return `/photos/${filename}`
   })
 
   ipcMain.on('app-quit', () => {

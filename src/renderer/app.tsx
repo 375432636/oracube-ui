@@ -3,7 +3,10 @@ import { createRoot } from 'react-dom/client'
 import EmotionMode from './components/emotion-mode'
 import CameraMode from './components/camera-mode'
 import ReportMode from './components/report-mode'
+import emotions from './emotions.json'
 import './global.css'
+
+const EMOTION_LIST = Object.keys(emotions)
 
 type Mode = 'emotion' | 'camera' | 'report'
 
@@ -25,12 +28,25 @@ const App: React.FC = () => {
         case '1': switchMode('emotion'); break
         case '2': switchMode('camera'); break
         case '3': switchMode('report'); break
+        case 'ArrowLeft':
+        case 'ArrowRight': {
+          if (currentMode !== 'emotion') break
+          const idx = EMOTION_LIST.indexOf(emotion || '')
+          if (e.key === 'ArrowLeft') {
+            const prev = idx <= 0 ? EMOTION_LIST.length - 1 : idx - 1
+            setEmotion(EMOTION_LIST[prev])
+          } else {
+            const next = idx >= EMOTION_LIST.length - 1 ? 0 : idx + 1
+            setEmotion(EMOTION_LIST[next])
+          }
+          break
+        }
         case 'Escape': window.oracubeUI?.quit(); break
       }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [switchMode])
+  }, [switchMode, currentMode, emotion])
 
   useEffect(() => {
     window.oracubeUI?.onModeChange((mode: string) => {

@@ -1,4 +1,9 @@
 import express, { Request, Response } from 'express'
+import { join } from 'path'
+import { existsSync } from 'fs'
+import { PHOTO_DIR } from './ipc-handlers'
+
+export const API_PORT = 8765
 
 const VALID_EMOTIONS = [
   'lively', 'speaking', 'laughing', 'sad', 'angry', 'confused',
@@ -38,6 +43,11 @@ export function createServer(
 ) {
   const app = express()
   app.use(express.json())
+
+  // Serve captured photos as static files
+  if (existsSync(PHOTO_DIR)) {
+    app.use('/photos', express.static(PHOTO_DIR))
+  }
 
   const state: AppState = {
     currentMode: 'emotion',

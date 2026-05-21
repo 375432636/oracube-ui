@@ -1,17 +1,17 @@
 {
   "lively": "lively.webm",
-  "speaking": "speaking.webm",
-  "laughing": "laughing.webm",
+  "speaking": "lively.webm",
+  "laughing": "happy.webm",
   "sad": "sad.webm",
   "angry": "angry.webm",
   "confused": "confused.webm",
-  "shy": "shy.webm",
-  "funny": "funny.webm",
-  "loving": "loving.webm",
-  "sleepy": "sleepy.webm",
-  "shocked": "shocked.webm",
-  "thinking": "thinking.webm",
-  "confident": "confident.webm",
-  "meditation": "meditation.webm",
-  "warmup": "warmup.webm"
+  "shy": "lively.webm",
+  "funny": "happy.webm",
+  "loving": "happy.webm",
+  "sleepy": "sad.webm",
+  "shocked": "confused.webm",
+  "thinking": "confused.webm",
+  "confident": "lively.webm",
+  "meditation": "sad.webm",
+  "warmup": "lively.webm"
 }
